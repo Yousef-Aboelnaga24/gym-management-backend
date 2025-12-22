@@ -28,7 +28,13 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       $validate =  $request->validate([
+            'building_num' => 'required',
+            'city' => 'required|max:30|string',
+            'street' => 'required|max:30|string',
+        ]);
+
+        $address = Address::create($validate);
     }
 
     /**

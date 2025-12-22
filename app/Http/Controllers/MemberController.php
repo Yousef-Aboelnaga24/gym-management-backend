@@ -28,7 +28,14 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'photo' => 'nullable|mimes:png,jpg,jpeg|max:2048',
+            'height' => 'required|numeric|min:50|max:300',
+            'weight' => 'required|numeric|min:20|max:300',
+            'blood_type' => 'required|in:A+, A-, B+, B-, AB+ ,AB-, O+, O-',
+            'note' => 'required|string|max:250',
+            'join_date' => 'required|date|before_or_equal:today'
+        ]);
     }
 
     /**

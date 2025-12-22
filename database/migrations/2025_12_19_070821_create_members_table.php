@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('person_id')->unique()->constrained('people')->cascadeOnDelete();
+            $table->string('photo')->nullable();
+            $table->decimal('height', 5, 2)->nullable();
+            $table->decimal('weight', 5, 2)->nullable();
+            $table->enum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
+            $table->text('note')->nullable();
+            $table->date('join_date');
             $table->timestamps();
         });
     }
