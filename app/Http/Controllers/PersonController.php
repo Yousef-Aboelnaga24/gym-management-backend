@@ -28,7 +28,13 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:50',
+            'email' => 'required|unique:people,email|email',
+            'phone' => 'required|regex:/^01[0-5][0-9]{8}$/|unique:people,phone',
+            'date_of_birth' => 'required|before:today',
+            'gender' => 'required',
+        ]);
     }
 
     /**

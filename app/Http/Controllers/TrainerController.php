@@ -28,7 +28,10 @@ class TrainerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'specialties' => 'required|string|max:255',
+            'hire_date' => 'required|date|before_or_equal:today'
+        ]);
     }
 
     /**
