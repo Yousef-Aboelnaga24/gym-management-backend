@@ -12,7 +12,7 @@ class SessionController extends Controller
      */
     public function index()
     {
-        //
+        return Session::with(['trainer','category','members'])->get();
     }
 
     /**
@@ -20,7 +20,7 @@ class SessionController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -28,15 +28,15 @@ class SessionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Session::create($request->all());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Session $session)
+    public function show(Session $session , $id)
     {
-        //
+        return Session::with(['trainer','category','members'])->findOrFail($id);
     }
 
     /**
@@ -44,22 +44,25 @@ class SessionController extends Controller
      */
     public function edit(Session $session)
     {
-        //
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session , $id)
     {
-        //
+        $session = Session::findOrFail($id);
+        $session->update($request->all());
+        return $session;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Session $session)
+    public function destroy(Session $session , $id)
     {
-        //
+        Session::findOrFail($id)->delete();
+        return response()->noContent();
     }
 }

@@ -12,7 +12,7 @@ class PlanController extends Controller
      */
     public function index()
     {
-        //
+        return Plan::all();
     }
 
     /**
@@ -28,15 +28,15 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Plan::create($request->all());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Plan $plan)
+    public function show(Plan $plan ,$id)
     {
-        //
+        return Plan::with('members')->findOrFail($id);
     }
 
     /**
@@ -50,16 +50,19 @@ class PlanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Plan $plan)
+    public function update(Request $request, Plan $plan, $id)
     {
-        //
+        $plan = Plan::findOrFail($id);
+        $plan->update($request->all());
+        return $plan;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Plan $plan)
+    public function destroy( $id)
     {
-        //
+        Plan::findOrFail($id)->delete();
+        return response()->noContent();
     }
 }
