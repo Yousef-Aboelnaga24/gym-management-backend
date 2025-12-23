@@ -12,7 +12,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        return Category::all();
     }
 
     /**
@@ -28,15 +28,18 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'category_name' => 'required|max:20|unique:categories',
+        ]);
+        return Category::create($request->all());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Category $category , $id)
     {
-        //
+        return Category::with(relations: ['sessions'])->findOrFail($id);
     }
 
     /**
@@ -50,16 +53,31 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category , $id)
     {
-        //
+        $category = Category::findOrFail($id);
+
+        $request->validate([
+            'category_name' => 'required|max:20|unique:categories,category_name,' . $category->id,
+        ]);
+        $category->update($request->all());
+        return $category;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category ,$id)
     {
-        //
+        $category = Category::findOrFail($id);
+
+        if ($category->sessions()->exists()) {
+            return response()->json([
+                'message' => 'Cannot delete category with sessions'
+            ], 422);
+        }
+
+        $category->delete();
+        return response()->noContent();
     }
 }
