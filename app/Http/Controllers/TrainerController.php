@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Trainer;
 use Illuminate\Http\Request;
 
@@ -28,10 +29,17 @@ class TrainerController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated =  $request->validate([
             'specialties' => 'required|string|max:255',
             'hire_date' => 'required|date|before_or_equal:today'
         ]);
+
+        $trainer = Trainer::create($validated);
+
+        return response()->json([
+            'message' => 'Trainer created successfully',
+            'data' => $trainer
+        ], 201);
     }
 
     /**
@@ -55,7 +63,17 @@ class TrainerController extends Controller
      */
     public function update(Request $request, Trainer $trainer)
     {
-        //
+        $validated =  $request->validate([
+            'specialties' => 'nullable|string|max:255',
+            'hire_date' => 'nullable|date|before_or_equal:today'
+        ]);
+
+        $trainer->update($validated);
+
+        return response()->json([
+            'message' => 'Trainer updated successfully',
+            'data' => $trainer
+        ], 200);
     }
 
     /**
@@ -63,6 +81,7 @@ class TrainerController extends Controller
      */
     public function destroy(Trainer $trainer)
     {
-        //
+        $trainer->delete();
+        return response()->noContent();
     }
 }

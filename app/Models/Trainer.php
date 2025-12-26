@@ -11,4 +11,14 @@ class Trainer extends Model
         'specialties',
         'hire_date'
     ];
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
+    public function sessions()
+    {
+        return $this->hasMany(Session::class);
+    }
 }

@@ -14,4 +14,9 @@ class Person extends Model
         'date_of_birth',
         'gender'
     ];
+
+    public function address()
+    {
+        $this->belongsTo(Address::class);
+    }
 }

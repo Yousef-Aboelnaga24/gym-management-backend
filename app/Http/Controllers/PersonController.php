@@ -12,7 +12,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        //
+        $people = Person::latest()->get();
     }
 
     /**
@@ -20,7 +20,7 @@ class PersonController extends Controller
      */
     public function create()
     {
-        //
+        $person = Person::all();
     }
 
     /**
@@ -28,13 +28,20 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|max:50',
             'email' => 'required|unique:people,email|email',
             'phone' => 'required|regex:/^01[0-5][0-9]{8}$/|unique:people,phone',
             'date_of_birth' => 'required|before:today',
             'gender' => 'required',
         ]);
+
+        $person = Person::create($validated);
+
+        return response()->json([
+            'message' => 'Person created success',
+            'data' => $person
+        ], 201);
     }
 
     /**
@@ -58,7 +65,20 @@ class PersonController extends Controller
      */
     public function update(Request $request, Person $person)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'nullable|max:50',
+            'email' => 'nullable|unique:people,email|email' . $person->id,
+            'phone' => 'nullable|regex:/^01[0-5][0-9]{8}$/|unique:people,phone' . $person->id,
+            'date_of_birth' => 'nullable|before:today',
+            'gender' => 'nullable',
+        ]);
+
+        $person->update($validated);
+
+        return response()->json([
+            'message' => 'Person updated success',
+            'data' => $person
+        ], 200);
     }
 
     /**
@@ -66,6 +86,8 @@ class PersonController extends Controller
      */
     public function destroy(Person $person)
     {
-        //
+        $person->delete();
+
+        return response()->noContent();
     }
 }
