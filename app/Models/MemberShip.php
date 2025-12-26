@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class MemberShip extends Model
 {
     protected $fillable = [
+<<<<<<< HEAD
         'member_id',
         'plan_id',
         'start_date',
         'end_date'
+=======
+        'member_id','plan_id','start_date','end_date'
+>>>>>>> origin/main
     ];
 
     protected $casts = [
@@ -27,4 +31,8 @@ class MemberShip extends Model
     {
         return $this->belongsTo(Plan::class);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main
