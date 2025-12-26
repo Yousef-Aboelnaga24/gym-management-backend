@@ -15,4 +15,14 @@ class Member extends Model
         'note',
         'join_date'
     ];
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
+    public function memberships()
+    {
+        return $this->hasMany(MemberShip::class);
+    }
 }
