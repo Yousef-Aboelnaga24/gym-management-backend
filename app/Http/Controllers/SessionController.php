@@ -44,7 +44,6 @@ class SessionController extends Controller
      */
     public function edit(Session $session)
     {
-        
     }
 
     /**
