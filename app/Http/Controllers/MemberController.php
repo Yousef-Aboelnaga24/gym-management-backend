@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
-// use Illuminate\Container\Attributes\Storage;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
@@ -14,7 +13,11 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+        $members = Member::with('person.address')->get();
+
+        return response()->json([
+            'data' => $members
+        ]);
     }
 
     /**
@@ -36,7 +39,7 @@ class MemberController extends Controller
             'weight' => 'nullable|numeric|min:20|max:300',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'note' => 'nullable|string|max:250',
-            'join_date' => 'required|date|before_or_equal:today'
+            'join_date' => 'nullable|date|before_or_equal:today'
         ]);
 
         if ($request->hasFile('photo')) {
@@ -57,7 +60,9 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
-        //
+        return response()->json([
+            'data' => $member
+        ]);
     }
 
     /**
