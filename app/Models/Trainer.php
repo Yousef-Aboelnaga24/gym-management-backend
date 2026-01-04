@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Trainer extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'person_id',
         'specialties',
@@ -17,7 +20,7 @@ class Trainer extends Model
         return $this->belongsTo(Person::class);
     }
 
-    public function sessions()
+    public function session()
     {
         return $this->hasMany(Session::class);
     }

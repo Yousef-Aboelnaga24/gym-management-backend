@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Person extends Model
 {
+
+    use HasFactory;
+
     protected $fillable = [
         'address_id',
         'name',
@@ -17,6 +21,6 @@ class Person extends Model
 
     public function address()
     {
-        $this->belongsTo(Address::class);
+        return $this->belongsTo(Address::class);
     }
 }

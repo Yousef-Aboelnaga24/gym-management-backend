@@ -6,11 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Session extends Model
 {
-<<<<<<< HEAD
-    protected $table = 'session';
-=======
-    protected $table = 'sessions';
->>>>>>> origin/main
 
     protected $fillable = [
         'trainer_id',
@@ -43,8 +38,4 @@ class Session extends Model
             ->withPivot(['booking_date', 'is_attended'])
             ->withTimestamps();
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

@@ -28,13 +28,16 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
-       $validate =  $request->validate([
+        $validate =  $request->validate([
             'building_num' => 'required',
             'city' => 'required|max:30|string',
             'street' => 'required|max:30|string',
         ]);
 
-        $address = Address::create($validate);
+        $address = Address::updateOrCreate(
+            ['user_id' => auth()->id],
+            $validate
+        );
     }
 
     /**
@@ -58,7 +61,13 @@ class AddressController extends Controller
      */
     public function update(Request $request, Address $address)
     {
-        //
+        $validated =  $request->validate([
+            'building_num' => 'nullable',
+            'city' => 'nullable|max:30|string',
+            'street' => 'nullable|max:30|string',
+        ]);
+
+        $address->update($validated);
     }
 
     /**
