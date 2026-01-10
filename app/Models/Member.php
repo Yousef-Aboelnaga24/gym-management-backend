@@ -10,7 +10,7 @@ class Member extends Model
     use HasFactory;
 
     protected $fillable = [
-        'person_id',
+        'user_id',
         'photo',
         'height',
         'weight',
@@ -19,19 +19,20 @@ class Member extends Model
         'join_date'
     ];
 
-    public function person()
+    public function user()
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(User::class);
     }
-
     public function session()
     {
         return $this->belongsToMany(Session::class, 'bookings', 'member_id', 'session_id')->withPivot(['booking_date', 'is_attended'])->withTimestamps();
     }
-
-
     public function memberships()
     {
         return $this->hasMany(MemberShip::class);
+    }
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

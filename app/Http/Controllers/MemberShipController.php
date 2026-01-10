@@ -80,7 +80,7 @@ class MemberShipController extends Controller
      */
     public function destroy(MemberShip $memberShip, $id)
     {
-        Membership::findOrFail($id)->delete();
+        $memberShip->delete();
         return response()->noContent();
     }
 }

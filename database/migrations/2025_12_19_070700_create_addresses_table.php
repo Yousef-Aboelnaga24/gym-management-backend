@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')      // كل عنوان تابع لمستخدم واحد
-                ->unique()                  // منع أكثر من عنوان لنفس المستخدم
+            $table->foreignId('user_id')
+                ->unique()
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('building_num');

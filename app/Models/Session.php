@@ -38,4 +38,9 @@ class Session extends Model
             ->withPivot(['booking_date', 'is_attended'])
             ->withTimestamps();
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

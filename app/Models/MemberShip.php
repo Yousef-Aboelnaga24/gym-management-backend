@@ -11,10 +11,6 @@ class MemberShip extends Model
         'plan_id',
         'start_date',
         'end_date',
-        'member_id',
-        'plan_id',
-        'start_date',
-        'end_date'
     ];
 
     protected $casts = [
