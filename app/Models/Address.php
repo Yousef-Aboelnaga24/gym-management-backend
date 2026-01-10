@@ -15,8 +15,8 @@ class Address extends Model
         'street'
     ];
 
-    public function person()
+    public function user()
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(User::class);
     }
 }

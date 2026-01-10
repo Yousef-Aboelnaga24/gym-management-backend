@@ -10,17 +10,17 @@ class Trainer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'person_id',
+        'user_id',
         'specialties',
         'hire_date'
     ];
 
-    public function person()
+    public function user()
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function session()
+    public function sessions()
     {
         return $this->hasMany(Session::class);
     }
