@@ -22,6 +22,7 @@ class StoreMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'required|exists:users,id',
             'photo' => 'nullable|mimes:png,jpg,jpeg|max:2048',
             'height' => 'nullable|numeric|min:50|max:300',
             'weight' => 'nullable|numeric|min:20|max:300',

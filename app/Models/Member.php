@@ -23,14 +23,17 @@ class Member extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function session()
     {
         return $this->belongsToMany(Session::class, 'bookings', 'member_id', 'session_id')->withPivot(['booking_date', 'is_attended'])->withTimestamps();
     }
+
     public function memberships()
     {
         return $this->hasMany(MemberShip::class);
     }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
