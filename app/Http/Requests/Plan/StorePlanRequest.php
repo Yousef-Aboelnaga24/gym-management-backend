@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTrainerRequest extends FormRequest
+class StorePlanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class StoreTrainerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'specialties' => 'required|string|max:255',
-            'hire_date' => 'required|date|before_or_equal:today'
+            //
         ];
     }
 }

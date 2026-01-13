@@ -6,6 +6,13 @@ use App\Models\Member;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
+//Resource
+use App\Http\Resources\MemberResource;
+
+//Request
+use App\Http\Requests\StoreMemberRequest;
+use App\Http\Requests\UpdateMemberRequest;
+
 class MemberController extends Controller
 {
     /**
@@ -14,10 +21,7 @@ class MemberController extends Controller
     public function index()
     {
         $members = Member::with('user.address')->get();
-
-        return response()->json([
-            'data' => $members
-        ]);
+        return MemberResource::collection($members);
     }
 
     /**
@@ -31,16 +35,9 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreMemberRequest $request)
     {
-        $validated = $request->validate([
-            'photo' => 'nullable|mimes:png,jpg,jpeg|max:2048',
-            'height' => 'nullable|numeric|min:50|max:300',
-            'weight' => 'nullable|numeric|min:20|max:300',
-            'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'note' => 'nullable|string|max:250',
-            'join_date' => 'nullable|date|before_or_equal:today'
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('members', 'public');
@@ -49,10 +46,12 @@ class MemberController extends Controller
 
         $member = Member::create($validated);
 
-        return response()->json([
-            'message' => 'Member created successfully',
-            'data' => $member
-        ], 201);
+        return (new MemberResource($member->load('user.address')))
+            ->additional([
+                'message' => 'Member created successfully'
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -60,9 +59,7 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
-        return response()->json([
-            'data' => $member
-        ]);
+        return new MemberResource($member->load('user.address'));
     }
 
     /**
@@ -76,16 +73,9 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Member $member)
+    public function update(UpdateMemberRequest $request, Member $member)
     {
-        $validated = $request->validate([
-            'photo' => 'nullable|mimes:png,jpg,jpeg|max:2048',
-            'height' => 'nullable|numeric|min:50|max:300',
-            'weight' => 'nullable|numeric|min:20|max:300',
-            'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'note' => 'nullable|string|max:250',
-            'join_date' => 'required|date|before_or_equal:today'
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('photo')) {
 
@@ -99,10 +89,10 @@ class MemberController extends Controller
 
         $member->update($validated);
 
-        return response()->json([
-            'message' => 'Member updated successfully',
-            'data' => $member
-        ], 200);
+        return (new MemberResource($member->load('user.address')))
+            ->additional([
+                'message' => 'Member updated successfully'
+            ]);
     }
 
     /**

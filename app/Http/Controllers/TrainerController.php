@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use App\Models\Trainer;
 use Illuminate\Http\Request;
+
+// Resource
+use App\Http\Resources\TrainerResource;
+
+// Request
+use App\Http\Requests\StoreTrainerRequest;
+use App\Http\Requests\UpdateTrainerRequest;
 
 class TrainerController extends Controller
 {
@@ -13,7 +19,8 @@ class TrainerController extends Controller
      */
     public function index()
     {
-        //
+        $trainers = Trainer::with('user.address')->get();
+        return TrainerResource::collection($trainers);
     }
 
     /**
@@ -27,19 +34,18 @@ class TrainerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTrainerRequest $request)
     {
-        $validated =  $request->validate([
-            'specialties' => 'required|string|max:255',
-            'hire_date' => 'required|date|before_or_equal:today'
-        ]);
+        $validated =  $request->validated();
 
         $trainer = Trainer::create($validated);
 
-        return response()->json([
-            'message' => 'Trainer created successfully',
-            'data' => $trainer
-        ], 201);
+        return (new TrainerResource($trainer->load('user.address')))
+            ->additional([
+                'message' => 'Trainer created successfully'
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -47,7 +53,7 @@ class TrainerController extends Controller
      */
     public function show(Trainer $trainer)
     {
-        //
+        return new TrainerResource($trainer->load('user.address'));
     }
 
     /**
@@ -61,19 +67,16 @@ class TrainerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Trainer $trainer)
+    public function update(UpdateTrainerRequest $request, Trainer $trainer)
     {
-        $validated =  $request->validate([
-            'specialties' => 'nullable|string|max:255',
-            'hire_date' => 'nullable|date|before_or_equal:today'
-        ]);
+        $validated =  $request->validated();
 
         $trainer->update($validated);
 
-        return response()->json([
-            'message' => 'Trainer updated successfully',
-            'data' => $trainer
-        ], 200);
+        return (new TrainerResource($trainer->load('user.address')))
+            ->additional([
+                'message' => 'Trainer updated successfully'
+            ]);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,12 +19,13 @@ class MemberFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory()->state(['role' => 'member'])->has(Address::factory()),
             'photo' => null,
-            'height' => $this->faker->randomFloat(2, 150, 200),
-            'weight' => $this->faker->randomFloat(2, 50, 120),
+            'height' => $this->faker->numberBetween(150, 250),
+            'weight' => $this->faker->numberBetween(50, 120),
             'blood_type' => $this->faker->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
             'note' => $this->faker->sentence(),
-            'join_date' => now(),
+            'join_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }
