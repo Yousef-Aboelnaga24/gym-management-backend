@@ -16,6 +16,7 @@ class MemberResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'member_name' => $this->user?->name,
             'photo' => $this->photo ? asset('storage/' . $this->photo) : null,
             'height' => $this->height,
             'weight' => $this->weight,

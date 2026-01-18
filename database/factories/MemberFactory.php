@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Address;
+use App\Models\Member;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,10 +17,12 @@ class MemberFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = Member::class;
     public function definition(): array
     {
         return [
             'user_id' => User::factory()->state(['role' => 'member'])->has(Address::factory()),
+            'name' => $this->faker->name(),
             'photo' => null,
             'height' => $this->faker->numberBetween(150, 250),
             'weight' => $this->faker->numberBetween(50, 120),

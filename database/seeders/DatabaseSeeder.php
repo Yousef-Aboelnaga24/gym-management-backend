@@ -2,27 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\Address;
-use App\Models\Member;
-use App\Models\Trainer;
-use App\Models\Plan;
-use App\Models\Membership;
-
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\{
+    Trainer,
+    Category,
+    Member,
+    Plan,
+    Membership,
+    Session,
+    Booking
+};
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        Member::factory()->count(10)->create();
-        Trainer::factory()->count(5)->create();
-        Plan::factory()->count(5)->create();
-        Membership::factory()->count(15)->create();
+        Trainer::factory(5)->create();
+        Category::factory(7)->create();
+        Member::factory(20)->create();
+        Plan::factory(5)->create();
+        Membership::factory(10)->create();
+
+        $sessions = Session::factory(10)->create();
+
+        foreach ($sessions as $session) {
+            $members = Member::inRandomOrder()
+                ->take(rand(1, $session->capacity))
+                ->get();
+
+            foreach ($members as $member) {
+                Booking::create([
+                    'member_id' => $member->id,
+                    'session_id' => $session->id,
+                    'booking_date' => now(),
+                    'is_attended' => rand(0, 1),
+                ]);
+            }
+        }
     }
 }

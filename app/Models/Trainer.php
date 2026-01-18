@@ -11,6 +11,7 @@ class Trainer extends Model
 
     protected $fillable = [
         'user_id',
+        'name',
         'specialties',
         'hire_date'
     ];
