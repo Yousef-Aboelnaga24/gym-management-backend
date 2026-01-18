@@ -1,62 +1,46 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Session;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreSessionRequest;
+use App\Http\Requests\UpdateSessionRequest;
+use App\Http\Resources\SessionResource;
+use App\Services\SessionService;
 
 class SessionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $service;
+
+    public function __construct(SessionService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        return Session::with(['trainer', 'category', 'members'])->get();
+        return SessionResource::collection($this->service->getAll());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create() {}
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreSessionRequest $request)
     {
-        return Session::create($request->all());
+        $session = $this->service->create($request->validated());
+        return new SessionResource($session);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Session $session, $id)
+    public function show($id)
     {
-        return Session::with(['trainer', 'category', 'members'])->findOrFail($id);
+        return new SessionResource($this->service->getById($id));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Session $session) {}
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Session $session, $id)
+    public function update(UpdateSessionRequest $request, $id)
     {
-        $session = Session::findOrFail($id);
-        $session->update($request->all());
-        return $session;
+        $session = $this->service->update($id, $request->validated());
+        return new SessionResource($session);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Session $session, $id)
+    public function destroy($id)
     {
-        Session::findOrFail($id)->delete();
+        $this->service->delete($id);
         return response()->noContent();
     }
 }
+?>

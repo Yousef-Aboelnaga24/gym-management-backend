@@ -2,82 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
+use App\Services\CategoryService;
 
 class CategoryController extends Controller
 {
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Category::all();
-    }
+        $categories = $this->categoryService->getAll();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return CategoryResource::collection($categories);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'category_name' => 'required|max:20|unique:categories',
-        ]);
-        return Category::create($request->all());
+        $category = $this->categoryService->create(
+            $request->validated()
+        );
+
+        return new CategoryResource($category);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category , $id)
+    public function show($id)
     {
-        return Category::with(relations: ['sessions'])->findOrFail($id);
-    }
+        $category = $this->categoryService->findWithSessions($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
+        return new CategoryResource($category);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category , $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
-        $category = Category::findOrFail($id);
+        $category = $this->categoryService->update(
+            $id,
+            $request->validated()
+        );
 
-        $request->validate([
-            'category_name' => 'required|max:20|unique:categories,category_name,' . $category->id,
-        ]);
-        $category->update($request->all());
-        return $category;
+        return new CategoryResource($category);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category ,$id)
+    public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $this->categoryService->delete($id);
 
-        if ($category->sessions()->exists()) {
-            return response()->json([
-                'message' => 'Cannot delete category with sessions'
-            ], 422);
-        }
-
-        $category->delete();
         return response()->noContent();
     }
 }
+?>

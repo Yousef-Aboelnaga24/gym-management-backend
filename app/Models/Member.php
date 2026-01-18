@@ -11,6 +11,7 @@ class Member extends Model
 
     protected $fillable = [
         'user_id',
+        'name',
         'photo',
         'height',
         'weight',
@@ -18,6 +19,7 @@ class Member extends Model
         'note',
         'join_date'
     ];
+
 
     public function user()
     {
