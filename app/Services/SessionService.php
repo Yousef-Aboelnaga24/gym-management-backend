@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Session;
@@ -10,9 +11,9 @@ class SessionService
         return Session::with(['trainer', 'category', 'members'])->get();
     }
 
-    public function getById($id)
+    public function getById(Session $session)
     {
-        return Session::with(['trainer', 'category', 'members'])->findOrFail($id);
+        return $session->load(['trainer', 'category', 'members']);
     }
 
     public function create(array $data)
@@ -20,18 +21,14 @@ class SessionService
         return Session::create($data);
     }
 
-    public function update($id, array $data)
+    public function update(Session $session, array $data)
     {
-        $session = Session::findOrFail($id);
         $session->update($data);
-        return $session;
+        return $session->load(['trainer', 'category', 'members']);
     }
 
-    public function delete($id)
+    public function delete(Session $session)
     {
-        $session = Session::findOrFail($id);
         $session->delete();
     }
 }
-
-?>

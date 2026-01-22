@@ -16,14 +16,18 @@ class MemberResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'member_name' => $this->user?->name,
+            'name' => $this->user?->name,
+            'email' => $this->user?->email,
+            'phone' => $this->user?->phone,
+            'gender' => $this->user?->gender,
+            'date_of_birth' => $this->user?->date_of_birth,
             'photo' => $this->photo ? asset('storage/' . $this->photo) : null,
             'height' => $this->height,
             'weight' => $this->weight,
             'blood_type' => $this->blood_type,
             'note' => $this->note,
-            'join_date' => $this->join_date,
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'join_date' => $this->join_date->format('Y-m-d'),
+            'address' => AddressResource::make($this->user?->address),
             'created_at' => $this->created_at,
         ];
     }

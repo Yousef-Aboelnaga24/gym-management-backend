@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Session;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -11,7 +11,7 @@ class UpdateSessionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,12 +22,12 @@ class UpdateSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'trainer_id' => 'sometimes|required|exists:trainers,id',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'description' => 'sometimes|required|string|max:1000',
-            'capacity' => 'sometimes|required|integer|min:1',
-            'start_date' => 'sometimes|required|date|before_or_equal:end_date',
-            'end_date' => 'sometimes|required|date|after_or_equal:start_date',
+            'trainer_id' => 'sometimes|nullable|exists:trainers,id',
+            'category_id' => 'sometimes|nullable|exists:categories,id',
+            'description' => 'sometimes|nullable|string|max:1000',
+            'capacity' => 'sometimes|nullable|integer|min:1',
+            'start_date' => 'sometimes|nullable|date|before_or_equal:end_date',
+            'end_date' => 'sometimes|nullable|date|after_or_equal:start_date',
         ];
     }
 }

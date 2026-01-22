@@ -22,7 +22,6 @@ class MemberFactory extends Factory
     {
         return [
             'user_id' => User::factory()->state(['role' => 'member'])->has(Address::factory()),
-            'name' => $this->faker->name(),
             'photo' => null,
             'height' => $this->faker->numberBetween(150, 250),
             'weight' => $this->faker->numberBetween(50, 120),

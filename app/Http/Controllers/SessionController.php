@@ -1,9 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreSessionRequest;
-use App\Http\Requests\UpdateSessionRequest;
+use App\Http\Requests\Session\StoreSessionRequest;
+use App\Http\Requests\Session\UpdateSessionRequest;
 use App\Http\Resources\SessionResource;
+use App\Models\Session;
 use App\Services\SessionService;
 
 class SessionController extends Controller
@@ -26,20 +27,20 @@ class SessionController extends Controller
         return new SessionResource($session);
     }
 
-    public function show($id)
+    public function show(Session $session)
     {
-        return new SessionResource($this->service->getById($id));
+        return new SessionResource($this->service->getById($session));
     }
 
-    public function update(UpdateSessionRequest $request, $id)
+    public function update(UpdateSessionRequest $request, Session $session)
     {
-        $session = $this->service->update($id, $request->validated());
+        $session = $this->service->update($session, $request->validated());
         return new SessionResource($session);
     }
 
-    public function destroy($id)
+    public function destroy(Session $session)
     {
-        $this->service->delete($id);
+        $this->service->delete($session);
         return response()->noContent();
     }
 }

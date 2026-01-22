@@ -16,9 +16,14 @@ class TrainerResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->user?->name,
+            'email' => $this->user?->email,
+            'phone' => $this->user?->phone,
+            'gender' => $this->user?->gender,
+            'date_of_birth' => $this->user?->date_of_birth,
             'specialties' => $this->specialties,
-            'hire_date' => $this->hire_date,
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'hire_date' => optional($this->hire_date)->format('Y-m-d'),
+            'address' => AddressResource::make($this->user?->address),
             'created_at' => $this->created_at,
         ];
     }

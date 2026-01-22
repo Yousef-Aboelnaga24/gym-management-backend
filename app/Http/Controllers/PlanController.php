@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use Illuminate\Http\Request;
-use App\Http\Requests\StorePlanRequest;
-use App\Http\Requests\UpdatePlanRequest;
+use App\Http\Requests\Plan\StorePlanRequest;
+use App\Http\Requests\Plan\UpdatePlanRequest;
 
 
 class PlanController extends Controller
@@ -15,15 +15,7 @@ class PlanController extends Controller
      */
     public function index()
     {
-        return Plan::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Plan::withCount('members')->latest()->get();
     }
 
     /**
@@ -49,14 +41,6 @@ class PlanController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Plan $plan)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdatePlanRequest $request, Plan $plan)
@@ -73,9 +57,22 @@ class PlanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Plan $plan)
     {
-        Plan::findOrFail($id)->delete();
+        $plan->delete();
         return response()->noContent();
+    }
+
+    public function toggleStatus(Request $request, Plan $plan)
+    {
+        $request->validate([
+            'is_active' => 'required|boolean',
+        ]);
+
+        $plan->update([
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return response()->json($plan);
     }
 }

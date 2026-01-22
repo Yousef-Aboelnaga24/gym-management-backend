@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AddressResource;
 use App\Models\Address;
 use Illuminate\Http\Request;
 
@@ -12,48 +13,37 @@ class AddressController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return AddressResource::collection(
+            Address::with('user')->paginate(10)
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validate =  $request->validate([
-            'building_num' => 'required',
-            'city' => 'required|max:30|string',
-            'street' => 'required|max:30|string',
-        ]);
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'building_num' => 'required|string|max:20',
+        'city'         => 'required|string|max:30',
+        'street'       => 'required|string|max:50',
+    ]);
 
-        $address = Address::updateOrCreate(
-            ['user_id' => auth()->id],
-            $validate
-        );
-    }
+    $address = Address::updateOrCreate(
+        ['user_id' => auth()->id],
+        $validated
+    );
+
+    return new AddressResource($address);
+}
+
 
     /**
      * Display the specified resource.
      */
     public function show(Address $address)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Address $address)
-    {
-        //
+        return new AddressResource($address);
     }
 
     /**
@@ -61,13 +51,15 @@ class AddressController extends Controller
      */
     public function update(Request $request, Address $address)
     {
-        $validated =  $request->validate([
-            'building_num' => 'nullable',
-            'city' => 'nullable|max:30|string',
-            'street' => 'nullable|max:30|string',
+        $validated = $request->validate([
+            'building_num' => 'nullable|string|max:20',
+            'city'         => 'nullable|string|max:30',
+            'street'       => 'nullable|string|max:50',
         ]);
 
         $address->update($validated);
+
+        return new AddressResource($address);
     }
 
     /**
@@ -75,6 +67,10 @@ class AddressController extends Controller
      */
     public function destroy(Address $address)
     {
-        //
+        $address->delete();
+
+        return response()->json([
+            'message' => 'Address deleted successfully',
+        ], 200);
     }
 }

@@ -14,8 +14,7 @@ class TrainerFactory extends Factory
             'user_id' => User::factory()->state([
                 'role' => 'trainer',
             ])->has(Address::factory()),
-            'name' => $this->faker->name(),
-            'specialties' => $this->faker->randomElement(['Cardio', 'Yoga', 'Fitness']),
+            'specialties' => $this->faker->randomElement(['Cardio', 'Yoga', 'Fitness','Zomba']),
             'hire_date' => $this->faker->dateTimeBetween('-3 years', 'now'),
         ];
     }

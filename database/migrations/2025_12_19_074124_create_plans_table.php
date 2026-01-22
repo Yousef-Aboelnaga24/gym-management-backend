@@ -13,9 +13,12 @@ return new class extends Migration {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->text('description');
-            $table->integer('duration_days')->check('duration_days between 1 and 365');
+            $table->text('description')->nullable();
+            $table->unsignedSmallInteger('duration');
+            $table->enum('period', ['month', 'year'])->default('month');
             $table->decimal('price', 10, 2);
+            $table->json('features')->nullable();
+            $table->boolean('popular')->default(false)->index();
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();

@@ -3,19 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trainer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 // Resource
 use App\Http\Resources\TrainerResource;
 
-// Request
-use App\Http\Requests\StoreTrainerRequest;
-use App\Http\Requests\UpdateTrainerRequest;
+// Requests
+use App\Http\Requests\Trainer\StoreTrainerRequest;
+use App\Http\Requests\Trainer\UpdateTrainerRequest;
 
 class TrainerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of trainers.
      */
     public function index()
     {
@@ -24,32 +27,43 @@ class TrainerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a new trainer and associated user.
      */
     public function store(StoreTrainerRequest $request)
     {
-        $validated =  $request->validated();
+        $data = $request->validated();
 
-        $trainer = Trainer::create($validated);
+        return DB::transaction(function () use ($data) {
+            // 1️⃣ Create the User first
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+                'password' => Hash::make($data['password']),
+                'gender' => $data['gender'],
+                'date_of_birth' => $data['date_of_birth'],
+                'role' => 'trainer',
+            ]);
 
-        return (new TrainerResource($trainer->load('user.address')))
-            ->additional([
-                'message' => 'Trainer created successfully'
-            ])
-            ->response()
-            ->setStatusCode(201);
+            // 2️⃣ Create Trainer linked to the user
+            $trainer = Trainer::create([
+                'user_id' => $user->id,
+                'specialties' => $data['specialties'] ?? null,
+                'hire_date' => $data['hire_date'],
+                'status' => $data['status'] ?? 'active',
+            ]);
+
+            return (new TrainerResource($trainer->load('user.address')))
+                ->additional([
+                    'message' => 'Trainer created successfully'
+                ])
+                ->response()
+                ->setStatusCode(201);
+        });
     }
 
     /**
-     * Display the specified resource.
+     * Show a single trainer.
      */
     public function show(Trainer $trainer)
     {
@@ -57,34 +71,45 @@ class TrainerController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Trainer $trainer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update a trainer and the associated user.
      */
     public function update(UpdateTrainerRequest $request, Trainer $trainer)
     {
-        $validated =  $request->validated();
+        $data = $request->validated();
 
-        $trainer->update($validated);
-
-        return (new TrainerResource($trainer->load('user.address')))
-            ->additional([
-                'message' => 'Trainer updated successfully'
+        return DB::transaction(function () use ($trainer, $data) {
+            // 1️⃣ Update the associated user
+            $trainer->user->update([
+                'name' => $data['name'] ?? $trainer->user->name,
+                'email' => $data['email'] ?? $trainer->user->email,
+                'phone' => $data['phone'] ?? $trainer->user->phone,
+                'gender' => $data['gender'] ?? $trainer->user->gender,
+                'date_of_birth' => $data['date_of_birth'] ?? $trainer->user->date_of_birth,
+                'password' => !empty($data['password'])
+                    ? Hash::make($data['password'])
+                    : $trainer->user->password,
             ]);
+
+            // 2️⃣ Update the trainer data
+            $trainer->update([
+                'specialties' => $data['specialties'] ?? $trainer->specialties,
+                'hire_date' => $data['hire_date'] ?? $trainer->hire_date,
+                'status' => $data['status'] ?? $trainer->status,
+            ]);
+
+            return (new TrainerResource($trainer->load('user.address')))
+                ->additional([
+                    'message' => 'Trainer updated successfully'
+                ]);
+        });
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete a trainer (and cascade delete user if needed).
      */
     public function destroy(Trainer $trainer)
     {
-        $trainer->delete();
+        $trainer->delete(); // user may cascade if DB set
         return response()->noContent();
     }
 }

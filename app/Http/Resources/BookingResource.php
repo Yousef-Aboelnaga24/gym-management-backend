@@ -12,16 +12,19 @@ class BookingResource extends JsonResource
         return [
             'id' => $this->id,
 
-            'member' => [
-                'id'   => $this->member->id,
-                'name' => $this->member->name,
-            ],
+            'members' => $this->whenLoaded('members', function () {
+                return $this->members->map(fn ($member) => [
+                    'id'   => $member->id,
+                    'name' => $member->name,
+                ]);
+            }),
 
-            'session' => [
+            'session' => $this->whenLoaded('session', fn () => [
                 'id'         => $this->session->id,
                 'start_date' => $this->session->start_date,
+                'end_date'   => $this->session->end_date,
                 'capacity'   => $this->session->capacity,
-            ],
+            ]),
 
             'created_at' => $this->created_at,
         ];

@@ -11,9 +11,12 @@ class Trainer extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
         'specialties',
         'hire_date'
+    ];
+
+    protected $casts = [
+        'hire_date' => 'date'
     ];
 
     public function user()

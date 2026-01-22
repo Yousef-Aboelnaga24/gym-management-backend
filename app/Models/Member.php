@@ -11,7 +11,6 @@ class Member extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
         'photo',
         'height',
         'weight',
@@ -20,6 +19,11 @@ class Member extends Model
         'join_date'
     ];
 
+    protected $casts = [
+        'join_date' => 'date',
+        'height'    => 'decimal:2',
+        'weight'    => 'decimal:2',
+    ];
 
     public function user()
     {

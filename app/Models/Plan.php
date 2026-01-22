@@ -10,20 +10,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Plan extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
         'description',
-        'duration_days',
+        'duration',
+        'period',
         'price',
+        'features',
+        'popular',
         'is_active'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        'duration_days' => 'integer',
+        'features' => 'array',
         'is_active' => 'boolean',
+        'popular'=>'boolean'
     ];
 
     public function members()

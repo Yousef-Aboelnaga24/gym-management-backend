@@ -12,11 +12,11 @@ class Session extends Model
     protected $fillable = [
         'trainer_id',
         'category_id',
-        'member_name',
         'description',
         'capacity',
         'start_date',
-        'end_date'
+        'end_date',
+        'status',
     ];
 
     protected $casts = [
@@ -37,7 +37,7 @@ class Session extends Model
 
     public function members()
     {
-        return $this->belongsToMany(Member::class, 'bookings', 'session_id', 'member_id' )
+        return $this->belongsToMany(Member::class, 'bookings')
             ->withPivot(['booking_date', 'is_attended'])
             ->withTimestamps();
     }

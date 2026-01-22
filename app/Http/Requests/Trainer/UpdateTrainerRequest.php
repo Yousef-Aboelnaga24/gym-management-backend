@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Trainer;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -21,9 +21,18 @@ class UpdateTrainerRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+           return [
+            // User fields
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $this->trainer->user_id,
+            'phone' => 'sometimes|string|size:11|unique:users,phone,' . $this->trainer->user_id,
+            'password' => 'nullable|string|min:6|confirmed',
+            'gender' => 'sometimes|in:male,female',
+            'date_of_birth' => 'sometimes|date|before:today',
+            // Trainer fields
             'specialties' => 'nullable|string|max:255',
-            'hire_date' => 'nullable|date|before_or_equal:today'
+            'hire_date' => 'sometimes|date|before_or_equal:today',
+            'status' => 'nullable|in:active,inactive',
         ];
     }
 }
