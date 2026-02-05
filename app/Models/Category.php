@@ -15,8 +15,8 @@ class Category extends Model
         return $this->category_name;
     }
 
-    public function sessions()
+    public function gymClasses()
     {
-        return $this->hasMany(Session::class);
+        return $this->hasMany(GymClass::class);
     }
 }

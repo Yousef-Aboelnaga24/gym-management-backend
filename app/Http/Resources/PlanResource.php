@@ -7,16 +7,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PlanResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
-            'id'=> $this->id,
-''
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'duration' => (int) $this->duration,
+            'period' => $this->period,
+            'price' => (float) $this->price,
         ];
     }
 }

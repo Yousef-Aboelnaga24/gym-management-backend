@@ -16,7 +16,7 @@ class SessionFactory extends Factory
         return [
             'trainer_id' => Trainer::inRandomOrder()->first()->id,
             'category_id' => Category::inRandomOrder()->first()->id,
-            'description' => $this->faker->sentence(),
+            'name' => $this->faker->sentence(),
             'capacity' => $this->faker->numberBetween(5, 20),
             'start_date' => $this->faker->dateTimeBetween('+1 days', '+10 days'),
             'end_date' => $this->faker->dateTimeBetween('+11 days', '+20 days'),

@@ -11,7 +11,6 @@ class Member extends Model
 
     protected $fillable = [
         'user_id',
-        'photo',
         'height',
         'weight',
         'blood_type',
@@ -30,14 +29,16 @@ class Member extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function session()
+    public function gymClasses()
     {
-        return $this->belongsToMany(Session::class, 'bookings', 'member_id', 'session_id')->withPivot(['booking_date', 'is_attended'])->withTimestamps();
+        return $this->belongsToMany(GymClass::class, 'bookings', 'member_id', 'gym_class_id')
+            ->withPivot(['booking_date', 'is_attended'])
+            ->withTimestamps();
     }
 
     public function memberships()
     {
-        return $this->hasMany(MemberShip::class);
+        return $this->hasMany(Membership::class);
     }
 
     public function bookings()

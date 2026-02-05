@@ -11,10 +11,12 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category_name' => $this->category_name,
-            'sessions' => $this->whenLoaded('sessions'),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'name' => $this->category_name,
+            'gym_classes' => $this->whenLoaded('gymClasses', function () {
+                return GymClassResource::collection($this->gymClasses);
+            }),
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

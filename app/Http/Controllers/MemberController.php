@@ -28,7 +28,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = Member::with('user.address')->get();
+        $members = Member::with(['user.address','memberships'])->get();
 
         return MemberResource::collection($members);
     }

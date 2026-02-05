@@ -1,36 +1,72 @@
 <?php
+
 namespace App\Services;
+
 use App\Models\Booking;
-use App\Models\Session;
+use App\Models\GymClass;
+
 class BookingService
 {
+    public function getAll()
+    {
+        return Booking::with([
+            'member.user',
+            'gymClass.trainer.user',
+            'gymClass.category'
+        ])->get();
+    }
+
     public function store(array $data): Booking
     {
-        return Booking::create($data);
+        $gymClass = GymClass::findOrFail($data['gym_class_id']);
+
+
+        if ($gymClass->capacity && $gymClass->members()->count() >= $gymClass->capacity) {
+            abort(422, 'Session is full');
+        }
+
+        if (Booking::where('member_id', $data['member_id'])
+            ->where('gym_class_id', $data['gym_class_id'])
+            ->exists()
+        ) {
+            abort(422, 'You already booked this session');
+        }
+
+        $booking = Booking::create($data);
+
+        return $booking->load([
+            'member.user',
+            'gymClass.trainer.user',
+            'gymClass.category'
+        ]);
     }
 
     public function update(int $id, array $data)
     {
-        $booking = Booking::with('session')->findOrFail($id);
-        $newSession = Session::findOrFail($data['session_id']);
-        if ($booking->session->start_date < now()) {
+        $booking = Booking::with('gymClass')->findOrFail($id);
+        $newSession = GymClass::findOrFail($data['gym_class_id']);
+
+        if (!$booking->gymClass || $booking->gymClass->start_date < now()) {
             abort(422, 'Cannot update past booking');
         }
-        if ($newSession->members()->count() >= $newSession->capacity) {
+
+        if ($newSession->capacity && $newSession->members()->count() >= $newSession->capacity) {
             abort(422, 'Session is full');
         }
-        if (
-            Booking::where('member_id', $booking->member_id)
-                ->where('session_id', $newSession->id)
-                ->exists()
+
+        if (Booking::where('member_id', $booking->member_id)
+            ->where('gym_class_id', $newSession->id)
+            ->exists()
         ) {
             abort(422, 'Member already booked this session');
         }
+
+        // تحديث الحجز
         $booking->update([
-            'session_id' => $newSession->id,
+            'gym_class_id' => $newSession->id,
         ]);
 
-        return $booking->load(['member', 'session']);
+        return $booking->load(['member.user', 'gymClass.trainer.user', 'gymClass.category']);
     }
 
     public function delete(Booking $booking): void
@@ -38,4 +74,3 @@ class BookingService
         $booking->delete();
     }
 }
-?>

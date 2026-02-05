@@ -2,85 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MemberShip;
+use App\Models\Membership;
 use App\Models\Plan;
-use Illuminate\Http\Request;
+
+// Requests
+use App\Http\Requests\Memberships\StoreMembershipRequest;
+use App\Http\Requests\Memberships\UpdateMembershipRequest;
+
+// Service
+use App\Services\MembershipService;
+
+// Resource
+use App\Http\Resources\MembershipResource;
 
 class MemberShipController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+      protected $service;
+
+    public function __construct(MembershipService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        return Membership::with(['member', 'plan'])->get();
+        return MembershipResource::collection($this->service->getAll());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreMembershipRequest $request)
     {
-
+        $membership = $this->service->create($request->validated());
+        return new MembershipResource($membership);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Membership $membership)
     {
-        $request->validate([
-            'member_id' => 'required|exists:members,id',
-            'plan_id' => 'required|exists:plans,id',
-        ]);
-
-        if (Membership::where('member_id', $request->member_id)->where('plan_id', $request->plan_id)->exists()) {
-            return response()->json([
-                'message' => 'Member already has this plan'
-            ], 422);
-        }
-        $plan = Plan::findOrFail($request->plan_id);
-
-        $membership = Membership::create([
-            'member_id' => $request->member_id,
-            'plan_id' => $plan->id,
-            'start_date' => now()->toDateString(),
-            'end_date' => now()->addDays($plan->duration_days),
-        ]);
-
-        return response()->json($membership, 201);
+        $membership->load(['member', 'plan']);
+        return new MembershipResource($membership);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(MemberShip $memberShip)
+    public function update(UpdateMembershipRequest $request, Membership $membership)
     {
-        //
+        $membership = $this->service->update($membership, $request->validated());
+        return new MembershipResource($membership);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MemberShip $memberShip)
+    public function destroy(Membership $membership)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MemberShip $memberShip , $id)
-    {
-        return Membership::with(['member','plan'])->findOrFail($id);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(MemberShip $memberShip, $id)
-    {
-        $memberShip->delete();
-        return response()->noContent();
+        $this->service->delete($membership);
+        return response()->json(['message' => 'Membership deleted successfully'], 200);
     }
 }

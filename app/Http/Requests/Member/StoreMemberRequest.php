@@ -23,7 +23,6 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'user_id' => 'required|exists:users,id|unique:members,user_id',
-            'photo' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             'height' => 'nullable|numeric|min:50|max:300',
             'weight' => 'nullable|numeric|min:20|max:300',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
@@ -37,8 +36,6 @@ class StoreMemberRequest extends FormRequest
             'user_id.required' => 'User is required',
             'user_id.exists' => 'Selected user does not exist',
             'user_id.unique' => 'This user is already registered as a member',
-            'photo.mimes' => 'Photo must be a file of type: png, jpg, jpeg',
-            'photo.max' => 'Photo size must not exceed 2MB',
             'height.numeric' => 'Height must be a number',
             'height.min' => 'Height must be at least 50 cm',
             'height.max' => 'Height must not exceed 300 cm',

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Session;
+namespace App\Http\Requests\GymClass;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSessionRequest extends FormRequest
+class StoreGymClassRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,11 @@ class StoreSessionRequest extends FormRequest
         return [
             'trainer_id' => 'required|exists:trainers,id',
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string|max:1000',
-            'capacity' => 'required|integer|min:1',
+            'name' => 'required|string|max:1000',
+            'capacity' => 'required|integer|min:5|max:25',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'status' => 'in:upcoming,ongoing,completed'
         ];
     }
 }

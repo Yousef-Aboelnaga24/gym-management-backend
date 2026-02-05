@@ -10,7 +10,7 @@ class Booking extends Model
     use HasFactory;
     protected $fillable = [
         'member_id',
-        'session_id',
+        'gym_class_id',
         'booking_date',
         'is_attended'
     ];
@@ -25,8 +25,8 @@ class Booking extends Model
         return $this->belongsTo(Member::class);
     }
 
-    public function session()
+    public function gymClass()
     {
-        return $this->belongsTo(Session::class, 'session_id');
+        return $this->belongsTo(GymClass::class);
     }
 }

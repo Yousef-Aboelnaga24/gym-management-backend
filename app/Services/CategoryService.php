@@ -16,9 +16,9 @@ class CategoryService
         return Category::create($data);
     }
 
-    public function findWithSessions(int $id): Category
+    public function findWithClasses(int $id): Category
     {
-        return Category::with('sessions')->findOrFail($id);
+        return Category::with('gymClasses')->findOrFail($id);
     }
 
     public function update(int $id, array $data): Category
@@ -33,7 +33,7 @@ class CategoryService
     {
         $category = Category::findOrFail($id);
 
-        if ($category->sessions()->exists()) {
+        if ($category->gymClasses()->exists()) {
             abort(422, 'Cannot delete category with sessions');
         }
 

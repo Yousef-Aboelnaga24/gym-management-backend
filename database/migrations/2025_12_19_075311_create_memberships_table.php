@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->enum('status', ['active', 'expired', 'canceled'])->default('active');
             $table->timestamps();
+            $table->unique(['member_id']);
         });
     }
 

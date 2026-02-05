@@ -12,21 +12,43 @@ class BookingResource extends JsonResource
         return [
             'id' => $this->id,
 
-            'members' => $this->whenLoaded('members', function () {
-                return $this->members->map(fn ($member) => [
-                    'id'   => $member->id,
-                    'name' => $member->name,
-                ]);
+            'member' => $this->whenLoaded('member', function () {
+                $memberUser = optional($this->member)->user;
+                return [
+                    'id' => $this->member->id ?? null,
+                    'name' => $memberUser?->name ?? 'No name',
+                    'photo' => $memberUser?->photo
+                        ? asset('storage/' . $memberUser->photo)
+                        : null,
+                ];
             }),
 
-            'session' => $this->whenLoaded('session', fn () => [
-                'id'         => $this->session->id,
-                'start_date' => $this->session->start_date,
-                'end_date'   => $this->session->end_date,
-                'capacity'   => $this->session->capacity,
-            ]),
+            'gym_class' => $this->whenLoaded('gymClass', function () {
+                $trainerUser = optional($this->gymClass?->trainer)->user;
+                $category = optional($this->gymClass)->category;
+                return [
+                    'id' => $this->gymClass->id ?? null,
+                    'name' => $this->gymClass->name ?? 'No class name',
+                    'start_date' => $this->gymClass->start_date?->format('Y-m-d H:i:s') ?? null,
+                    'end_date' => $this->gymClass->end_date?->format('Y-m-d H:i:s') ?? null,
+                    'capacity' => $this->gymClass->capacity ?? 0,
+                    'trainer' => [
+                        'id' => $this->gymClass->trainer->id ?? null,
+                        'name' => $trainerUser?->name ?? 'No trainer',
+                        'photo' => $trainerUser?->photo
+                            ? asset('storage/' . $trainerUser->photo)
+                            : null,
+                    ],
+                    'category' => [
+                        'id' => $category?->id ?? null,
+                        'name' => $category?->category_name ?? 'No category',
+                    ],
+                ];
+            }),
 
-            'created_at' => $this->created_at,
+            'booking_date' => $this->booking_date?->format('Y-m-d H:i:s') ?? null,
+            'is_attended' => (bool) $this->is_attended,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s') ?? null,
         ];
     }
 }

@@ -43,7 +43,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category = $this->categoryService->findWithSessions($id);
+        $category = $this->categoryService->findWithClasses($id);
 
         return new CategoryResource($category);
     }

@@ -5,51 +5,64 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class AuthController extends Controller
 {
-   public function register(StoreUserRequest $request)
-{
-    $data = $request->validated();
+    public function register(StoreUserRequest $request)
+    {
+        $data = $request->validated();
 
-    $data['password'] = bcrypt($data['password']);
-    $data['role'] = $data['role'] ?? 'member';
+        $data['password'] = bcrypt($data['password']);
+        $data['role'] = $data['role'] ?? 'member';
 
-    $data['phone'] = $data['phone'] ?: null;
-    $data['gender'] = $data['gender'] ?: null;
-    $data['date_of_birth'] = $data['date_of_birth'] ?: null;
+        $data['phone'] = $data['phone'] ?: null;
+        $data['gender'] = $data['gender'] ?: null;
+        $data['date_of_birth'] = $data['date_of_birth'] ?: null;
 
-    $user = User::create($data);
+        $user = User::create($data);
 
-    return response()->json([
-        'message' => 'Registered successfully',
-        'data' => $user
-    ], 201);
-}
+        if ($data['role'] === 'member') {
+            $user->member()->create([
+                'join_date' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Registered successfully',
+            'data' => $user->load('member')
+        ], 201);
+    }
 
 
+
+    // App/Http/Controllers/AuthController.php
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required',
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::with('member')->where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
             'token' => $token,
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'member_id' => $user->member?->id, // ← مهم جداً
+                'is_subscribed' => $user->member?->membership?->status === 'active',
+            ],
         ]);
     }
 }

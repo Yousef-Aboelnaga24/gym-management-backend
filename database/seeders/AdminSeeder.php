@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'Super Admin',
             'email' => 'admin@ironpulse.com',
-            'password' => Hash::make('admin1234'), // كلمة السر
+            'password' => Hash::make('admin1234'),
             'role' => 'admin',
             'phone' => '01000000000',
             'date_of_birth'=>'2000-01-04'

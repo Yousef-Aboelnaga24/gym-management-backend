@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Session extends Model
+class GymClass extends Model
 {
     use HasFactory;
-    protected $table = 'session';
     protected $fillable = [
         'trainer_id',
         'category_id',
-        'description',
+        'name',
         'capacity',
         'start_date',
         'end_date',
@@ -37,7 +36,7 @@ class Session extends Model
 
     public function members()
     {
-        return $this->belongsToMany(Member::class, 'bookings')
+        return $this->belongsToMany(Member::class, 'bookings', 'gym_class_id', 'member_id')
             ->withPivot(['booking_date', 'is_attended'])
             ->withTimestamps();
     }

@@ -9,8 +9,8 @@ use App\Models\{
     Member,
     Plan,
     Membership,
-    Session,
-    Booking
+    GymClass,
+    Booking,
 };
 
 class HomeController extends Controller
@@ -23,7 +23,7 @@ class HomeController extends Controller
             'members' => Member::all(),
             'plans' => Plan::all(),
             'memberships' => Membership::all(),
-            'sessions' => Session::with(['trainer', 'category'])->get(),
+            'classes' => GymClass::with(['trainer', 'category'])->get(),
             'bookings' => Booking::all(),
         ]);
     }

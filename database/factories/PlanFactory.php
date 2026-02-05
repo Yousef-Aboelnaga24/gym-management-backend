@@ -8,10 +8,8 @@ class PlanFactory extends Factory
 {
     public function definition(): array
     {
-        // اختيارات الفترة
-        $periods = ['day', 'week', 'month', 'year'];
+        $periods = ['month', 'year'];
 
-        // إنشاء مميزات عشوائية
         $features = [];
         $featureCount = $this->faker->numberBetween(0, 5); // من 0 لـ 5 مميزات
         for ($i = 0; $i < $featureCount; $i++) {

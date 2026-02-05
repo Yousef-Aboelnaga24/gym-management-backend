@@ -1,47 +1,58 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Booking\StoreBookingRequest;
-use App\Http\Resources\BookingResource;
-use App\Models\Booking;
+use App\Http\Controllers\Controller;
 use App\Services\BookingService;
+use App\Http\Requests\Booking\StoreBookingRequest;
+use App\Models\Booking;
 
 class BookingController extends Controller
 {
-    protected BookingService $bookingService;
-    public function __construct(BookingService $bookingService)
+    protected $service;
+
+    public function __construct(BookingService $service)
     {
-        $this->bookingService = $bookingService;
+        $this->service = $service;
     }
 
     public function index()
     {
-        return BookingResource::collection(
-            Booking::with(['member', 'session'])->get()
-        );
+        $bookings = $this->service->getAll();
+        return response()->json(['data' => $bookings]);
     }
 
     public function store(StoreBookingRequest $request)
     {
-        $booking = $this->bookingService->store($request->validated());
+        $data = $request->validated();
 
-        return new BookingResource($booking);
+        try {
+            $booking = $this->service->store($data);
+            return response()->json(['data' => $booking, 'message' => 'Booking successful']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 
-    public function show($id)
+    public function update(StoreBookingRequest $request, $id)
     {
-        return new BookingResource(
-            Booking::with(['member', 'session'])->findOrFail($id)
-        );
+        $data = $request->validated();
+
+        try {
+            $booking = $this->service->update($id, $data);
+            return response()->json(['data' => $booking, 'message' => 'Booking updated']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 
-    public function destroy($id)
+    public function destroy(Booking $booking)
     {
-        $booking = Booking::with('session')->findOrFail($id);
-
-        $this->bookingService->delete($booking);
-
-        return response()->noContent();
+        try {
+            $this->service->delete($booking);
+            return response()->json(['message' => 'Booking deleted']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 }

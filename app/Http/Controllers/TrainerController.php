@@ -109,7 +109,7 @@ class TrainerController extends Controller
      */
     public function destroy(Trainer $trainer)
     {
-        $trainer->delete(); // user may cascade if DB set
+        $trainer->delete();
         return response()->noContent();
     }
 }

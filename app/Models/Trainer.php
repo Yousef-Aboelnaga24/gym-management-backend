@@ -12,7 +12,8 @@ class Trainer extends Model
     protected $fillable = [
         'user_id',
         'specialties',
-        'hire_date'
+        'hire_date',
+        'status'
     ];
 
     protected $casts = [
@@ -24,8 +25,8 @@ class Trainer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function sessions()
+    public function gymClasses()
     {
-        return $this->hasMany(Session::class);
+        return $this->hasMany(GymClass::class);
     }
 }
